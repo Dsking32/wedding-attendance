@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const QRCode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
-require('dotenv').config();
+
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

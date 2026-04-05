@@ -1,13 +1,18 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const pool = require('../db');
+const { Pool } = require('pg');
+
 
 const router = express.Router();
 
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
-
   if (!name || !email || !password)
     return res.status(400).json({ error: 'All fields are required' });
 
@@ -31,7 +36,6 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password)
     return res.status(400).json({ error: 'Email and password required' });
 
