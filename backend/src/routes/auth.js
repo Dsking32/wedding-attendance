@@ -3,11 +3,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 
-
 const router = express.Router();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: 'aws-1-eu-west-2.pooler.supabase.com',
+  port: 6543,
+  database: 'postgres',
+  user: 'postgres.xhvgcdbwmqsnbeczdnzz',
+  password: 'Wedding@2024#Femi',
   ssl: { rejectUnauthorized: false }
 });
 
@@ -27,7 +30,7 @@ router.post('/register', async (req, res) => {
       [name, email, hashed]
     );
 
-    const token = jwt.sign({ id: result.rows[0].id, email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: result.rows[0].id, email }, process.env.JWT_SECRET || 'supersecretkey123', { expiresIn: '24h' });
     res.status(201).json({ admin: result.rows[0], token });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -49,7 +52,7 @@ router.post('/login', async (req, res) => {
     if (!match)
       return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET || 'supersecretkey123', { expiresIn: '24h' });
     res.json({ admin: { id: admin.id, name: admin.name, email: admin.email }, token });
   } catch (err) {
     res.status(500).json({ error: err.message });

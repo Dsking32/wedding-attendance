@@ -1,8 +1,11 @@
-
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: 'aws-1-eu-west-2.pooler.supabase.com',
+  port: 6543,
+  database: 'postgres',
+  user: 'postgres.xhvgcdbwmqsnbeczdnzz',
+  password: 'Wedding@2024#Femi',
   ssl: { rejectUnauthorized: false }
 });
 
@@ -15,7 +18,6 @@ const createTables = async () => {
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     );
-
     CREATE TABLE IF NOT EXISTS guests (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name VARCHAR(150) NOT NULL,
@@ -26,7 +28,6 @@ const createTables = async () => {
       check_in_time TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW()
     );
-
     CREATE TABLE IF NOT EXISTS checkin_logs (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       guest_id UUID REFERENCES guests(id) ON DELETE CASCADE,
@@ -34,7 +35,6 @@ const createTables = async () => {
       scanned_at TIMESTAMP DEFAULT NOW()
     );
   `;
-
   try {
     await pool.query(query);
     console.log('Database tables created successfully');

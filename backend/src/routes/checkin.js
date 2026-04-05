@@ -1,11 +1,14 @@
 const express = require('express');
 const { Pool } = require('pg');
 
-
 const router = express.Router();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: 'aws-1-eu-west-2.pooler.supabase.com',
+  port: 6543,
+  database: 'postgres',
+  user: 'postgres.xhvgcdbwmqsnbeczdnzz',
+  password: 'Wedding@2024#Femi',
   ssl: { rejectUnauthorized: false }
 });
 
@@ -40,7 +43,7 @@ router.post('/validate', async (req, res) => {
     await pool.query('INSERT INTO checkin_logs (guest_id, method) VALUES ($1, $2)', [guest.id, qr_data ? 'qr' : 'pin']);
 
     const updated = await pool.query('SELECT * FROM guests WHERE id = $1', [guest.id]);
-    
+
     req.io && req.io.emit('guest_checked_in', {
       name: updated.rows[0].name,
       section: updated.rows[0].section,
@@ -49,7 +52,11 @@ router.post('/validate', async (req, res) => {
 
     res.json({
       success: true,
-      guest: { name: updated.rows[0].name, section: updated.rows[0].section, check_in_time: updated.rows[0].check_in_time }
+      guest: {
+        name: updated.rows[0].name,
+        section: updated.rows[0].section,
+        check_in_time: updated.rows[0].check_in_time
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
